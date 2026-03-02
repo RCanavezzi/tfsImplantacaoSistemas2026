@@ -1,0 +1,66 @@
+/* style.css */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: Arial, sans-serif; 
+}
+
+body { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+    background-color: #f4f4f9; 
+    color: #333; 
+}
+
+header { 
+    background-color: #004080; 
+    color: white; 
+    padding: 1rem 5%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+}
+
+nav ul { list-style: none; display: flex; gap: 15px; }
+nav a { color: white; text-decoration: none; font-weight: bold; }
+nav a:hover { text-decoration: underline; }
+
+main { flex: 1; padding: 2rem 5%; }
+.container { max-width: 1200px; margin: 0 auto; }
+.card { 
+    background: white; 
+    padding: 1.5rem; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    margin-bottom: 1rem; 
+}
+
+/* Estilos do Formulário */
+form { display: flex; flex-direction: column; gap: 10px; }
+input, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+button { 
+    padding: 10px; 
+    background-color: #004080; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+}
+button:hover { background-color: #003060; }
+
+footer { 
+    background-color: #222; 
+    color: white; 
+    text-align: center; 
+    padding: 1rem; 
+    margin-top: auto; 
+}
+
+/* Responsividade para celulares */
+@media (max-width: 600px) {
+    header { flex-direction: column; text-align: center; gap: 10px; }
+    nav ul { flex-direction: column; }
+}
