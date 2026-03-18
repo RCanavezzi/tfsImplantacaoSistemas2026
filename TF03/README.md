@@ -35,7 +35,7 @@
 
 # Clone o repositório
 
-git clone [URL_DO_SEU_REPO]
+git clone https://github.com/RCanavezzi/tfsImplantacaoSistemas2026.git
 
 cd TF03
 
