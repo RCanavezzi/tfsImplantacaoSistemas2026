@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Ver Post - Meu Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Detalhes do Post</h1>
+        <a href="index.html" class="btn">Voltar à Lista</a>
+    </header>
+
+    <div id="post-container" class="post-card">
+        <p>A procurar o post na base de dados...</p>
+    </div>
+
+    <div id="edit-form" class="post-card" style="display: none; margin-top: 20px; border: 2px solid #007bff;">
+        <h3>Editar Post</h3>
+        <label>Novo Título:</label>
+        <input type="text" id="edit-titulo">
+        
+        <label>Novo Conteúdo:</label>
+        <textarea id="edit-conteudo" rows="5"></textarea>
+        
+        <button onclick="salvarEdicao()" class="btn">Guardar Alterações</button>
+        <button onclick="cancelarEdicao()" class="btn btn-danger">Cancelar</button>
+    </div>
+
+    <script>
+        // 1. Descobrir qual é o ID do post olhando para a URL (ex: post.html?id=5)
+        const parametrosDaUrl = new URLSearchParams(window.location.search);
+        const postId = parametrosDaUrl.get('id');
+        const API_URL = '/api/posts';
+
+        // 2. Função para buscar e mostrar o post
+        async function carregarPost() {
+            try {
+                const resposta = await fetch(`${API_URL}/${postId}`);
+                if (!resposta.ok) throw new Error('Post não encontrado!');
+                
+                const post = await resposta.json();
+                
+                // Preencher a tela com os dados
+                document.getElementById('post-container').innerHTML = `
+                    <h2>${post.title}</h2>
+                    <p>${post.content}</p>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                    <button onclick="mostrarEdicao('${post.title}', '${post.content}')" class="btn">Editar</button>
+                    <button onclick="apagarPost()" class="btn btn-danger">Apagar Post</button>
+                `;
+            } catch (erro) {
+                document.getElementById('post-container').innerHTML = `<p style="color: red;">Erro: ${erro.message}</p>`;
+            }
+        }
+
+        // 3. Função para apagar o post (método DELETE)
+        async function apagarPost() {
+            if(confirm('Tens a certeza absoluta que queres apagar este post?')) {
+                await fetch(`${API_URL}/${postId}`, { method: 'DELETE' });
+                window.location.href = 'index.html'; // Volta para o início
+            }
+        }
+
+        // 4. Funções para lidar com a edição (método PUT)
+        function mostrarEdicao(tituloAtual, conteudoAtual) {
+            document.getElementById('edit-form').style.display = 'block';
+            document.getElementById('edit-titulo').value = tituloAtual;
+            document.getElementById('edit-conteudo').value = conteudoAtual;
+        }
+
+        function cancelarEdicao() {
+            document.getElementById('edit-form').style.display = 'none';
+        }
+
+        async function salvarEdicao() {
+            const title = document.getElementById('edit-titulo').value;
+            const content = document.getElementById('edit-conteudo').value;
+            
+            await fetch(`${API_URL}/${postId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+            
+            document.getElementById('edit-form').style.display = 'none';
+            carregarPost(); // Recarrega o post para mostrar os novos dados
+        }
+
+        // Executar a busca assim que o script carregar
+        carregarPost();
+    </script>
+</body>
+</html>
