@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Post - Meu Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Criar Novo Post</h1>
+        <a href="index.html" class="btn">Voltar</a>
+    </header>
+
+    <div class="post-card">
+        <form id="form-post">
+            <label>Título do Post:</label>
+            <input type="text" id="titulo" required>
+            
+            <label>Conteúdo:</label>
+            <textarea id="conteudo" rows="6" required></textarea>
+            
+            <button type="submit" class="btn">Guardar Post</button>
+        </form>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.getElementById('form-post').addEventListener('submit', criarPost);
+    </script>
+</body>
+</html>

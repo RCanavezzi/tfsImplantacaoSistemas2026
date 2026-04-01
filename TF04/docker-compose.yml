@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # 1. O Maestro: Nginx Load Balancer Avançado
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: ecommerce-lb
+    ports:
+      - "80:80"      # Porta HTTP padrão
+      - "443:443"    # Porta HTTPS (SSL)
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro # Pasta para os certificados
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # 2. Frontend Estático
+  frontend:
+    build: ./frontend
+    container_name: ecommerce-frontend
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # 3. Painel de Administração (Novo Requisito)
+  admin:
+    build: ./admin
+    container_name: ecommerce-admin
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # 4. Backend Multiplicado (Alta Disponibilidade)
+  backend:
+    build: ./backend
+    # O Docker vai criar 3 contentores idênticos para esta API
+    deploy:
+      replicas: 3
+    expose:
+      - "5000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+volumes:
+  nginx-logs:
+    driver: local
