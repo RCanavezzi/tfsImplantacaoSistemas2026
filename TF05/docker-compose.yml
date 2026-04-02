@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # 1. Banco de Dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: database-app
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    # Healthcheck Avançado para o BD [cite: 211, 212, 213, 214, 215]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    networks:
+      - tf05-network
+
+  # 2. Cache Redis (Necessário para o TCP check da tarefa)
+  redis:
+    image: redis:alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - tf05-network
+
+  # 3. API Backend (A API em Python que acabamos de criar)
+  backend:
+    build: 
+      context: ./api
+    container_name: backend-api
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mapeia a pasta config local para o container poder ler os YAMLs
+      - ./config:/config
+    environment:
+      - CONFIG_PATH=/config/healthchecks.yml
+      - CONFIG_DIR=/config/
+    # Dependência inteligente: Só inicia após BD e Redis estarem saudáveis [cite: 121, 122]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health/status"]
+      interval: 15s
+      timeout: 5s
+      retries: 2
+      start_period: 30s
+    networks:
+      - tf05-network
+
+  # 4. Frontend Dashboard (HTML/JS)
+  frontend:
+    build: 
+      context: ./dashboard
+    container_name: web-frontend
+    ports:
+      - "3000:80"
+    # Só inicia após a API estar pronta para mandar os dados
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - tf05-network
+
+networks:
+  tf05-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local

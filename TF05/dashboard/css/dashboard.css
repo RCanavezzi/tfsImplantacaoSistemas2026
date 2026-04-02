@@ -1,0 +1,63 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.status-card {
+    padding: 15px 25px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    color: white;
+}
+
+.healthy { background-color: #2ecc71; color: #2ecc71;}
+.unhealthy { background-color: #e74c3c; color: #e74c3c;}
+.status-card.healthy { background-color: #27ae60; color: white;}
+.status-card.unhealthy { background-color: #c0392b; color: white;}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.service-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.service-card h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.status-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+}
